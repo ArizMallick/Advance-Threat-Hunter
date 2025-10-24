@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🛡️ Advanced Threat Hunter</title>
+  <style>
+    :root{
+      --bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 50%, #f5f7fa 100%);
+      --card: #ffffff;
+      --accent: #007bff;
+      --danger: #dc3545;
+      --purple: #6f42c1;
+      --mono: "Consolas", "Courier New", monospace;
+      --text: #212529;
+      --text-secondary: #6c757d;
+      --border: #dee2e6;
+      --shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    html, body{
+      min-height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    .container{
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .card{
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 24px;
+      width: 100%;
+      max-width: 1400px;
+      min-height: calc(100vh - 40px);
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+      margin-bottom: 20px;
+    }
+    header{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    h1{
+      font-size: 32px;
+      margin: 0;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+    .controls{
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 24px 0;
+    }
+    button{
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--accent);
+      color: white;
+      min-width: 140px;
+      font-size: 14px;
+    }
+    button:hover:not(:disabled){
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+    }
+    button:disabled{
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-scan{
+      background: var(--accent);
+    }
+    .btn-scan:hover:not(:disabled){
+      background: #0056b3;
+    }
+    .btn-clear{
+      background: var(--danger);
+    }
+    .btn-clear:hover:not(:disabled){
+      background: #c82333;
+    }
+    .btn-exit{
+      background: var(--purple);
+    }
+    .btn-exit:hover:not(:disabled){
+      background: #5a32a3;
+    }
+    .btn-download{
+      background: #28a745;
+    }
+    .btn-download:hover:not(:disabled){
+      background: #218838;
+    }
+    .btn-upload{
+      background: #ffc107;
+      color: #212529;
+    }
+    .btn-upload:hover:not(:disabled){
+      background: #e0a800;
+    }
+    .status{
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      background: #e9ecef;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      font-weight: 500;
+    }
+    .status.scanning{
+      background: #d1ecf1;
+      color: #0c5460;
+      border-color: #bee5eb;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    pre#output{
+      min-height: 600px;
+      max-height: 800px;
+      overflow: auto;
+      background: #f8f9fa;
+      color: #495057;
+      padding: 16px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 13px;
+      border: 1px solid var(--border);
+      margin: 12px 0;
+      line-height: 1.4;
+    }
+    .small{
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .footer{
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 24px;
+      font-weight: 500;
+    }
+    .badge{
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+    }
+    .upload-section{
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin: 24px 0;
+    }
+    input[type="file"]{
+      display: none;
+    }
+    .file-label{
+      display: inline-block;
+      padding: 10px 16px;
+      background: #e9ecef;
+      border: 2px solid var(--accent);
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 8px;
+      color: var(--text);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .file-label:hover{
+      background: var(--accent);
+      color: white;
+    }
+    pre#uploadResult{
+      max-height: 200px;
+      overflow: auto;
+      background: #f8f9fa;
+      color: #495057;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-top: 8px;
+      border: 1px solid var(--border);
+      line-height: 1.4;
+    }
+    hr{
+      border: none;
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+    @media (max-width: 768px) {
+      .container { padding: 10px; }
+      .card { padding: 16px; }
+      h1 { font-size: 24px; }
+      .controls { gap: 12px; }
+      button { min-width: 120px; padding: 10px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <header>
+        <div>
+          <h1>Advanced Threat Hunter</h1>
+          <div class="small">Real-time system scanning and log analysis powered by Flask</div>
+        </div>
+        <div class="status" id="status">Idle</div>
+      </header>
+
+      <div class="controls">
+        <button id="startBtn" class="btn-scan">Start Scan</button>
+        <button id="clearBtn" class="btn-clear">Clear</button>
+        <button id="downloadBtn" class="btn-download">Download Log</button>
+        <button id="exitBtn" class="btn-exit">Exit</button>
+        <div style="margin-left:16px;align-self:center;color:var(--text-secondary);font-weight:500;">Session: <span id="sessionId" class="badge">—</span></div>
+      </div>
+
+      <hr />
+
+      <pre id="output">💡 Click "Start Scan" to begin system threat scanning...
+🔐 The scanner will check for:
+   • Suspicious processes
+   • High resource usage
+   • Malicious patterns
+   • System anomalies
+
+Ready to scan.</pre>
+
+      <div class="upload-section">
+        <strong>📁 Upload Log File for Analysis:</strong><br><br>
+        <label for="logfile" class="file-label">
+          📎 Choose Log File
+        </label>
+        <input id="logfile" type="file" accept=".log,.txt,text/plain" />
+        <span id="fileName" style="color:var(--text-secondary);font-size:14px">No file chosen</span>
+        <br><br>
+        <button id="uploadBtn" class="btn-upload" disabled>Upload & Scan</button>
+        <pre id="uploadResult" style="display:none"></pre>
+      </div>
+
+      <div class="footer">✅ Connected to Flask backend at http://127.0.0.1:4000</div>
+    </div>
+  </div>
+
+  <script>
+    // DOM elements
+    const startBtn = document.getElementById('startBtn')
+    const clearBtn = document.getElementById('clearBtn')
+    const exitBtn = document.getElementById('exitBtn')
+    const downloadBtn = document.getElementById('downloadBtn')
+    const uploadBtn = document.getElementById('uploadBtn')
+    const output = document.getElementById('output')
+    const status = document.getElementById('status')
+    const sessionIdEl = document.getElementById('sessionId')
+    const uploadResult = document.getElementById('uploadResult')
+    const fileInput = document.getElementById('logfile')
+    const fileName = document.getElementById('fileName')
+
+    let evtSource = null
+    let sessionId = null
+    let logLines = []
+    let isScanning = false
+
+    function appendLine(line){
+      logLines.push(line)
+      output.textContent += line + '\n'
+      output.scrollTop = output.scrollHeight
+    }
+
+    function setStatus(s, scanning = false){ 
+      status.textContent = s 
+      if(scanning){
+        status.classList.add('scanning')
+      } else {
+        status.classList.remove('scanning')
+      }
+    }
+
+    async function startScan(){
+      if(isScanning) { 
+        appendLine('⚠️ Scan already in progress.'); 
+        return 
+      }
+      
+      isScanning = true
+      startBtn.disabled = true
+      setStatus('Initializing...', true)
+      output.textContent = ''
+      logLines = []
+
+      try{
+        const res = await fetch('/api/scan', { method:'POST' })
+        if(!res.ok) throw new Error('Failed to start scan (HTTP ' + res.status + ')')
+        const j = await res.json()
+        sessionId = j.session || j.id || null
+        sessionIdEl.textContent = sessionId ? sessionId.substring(0, 8) + '...' : '—'
+
+        if(typeof(EventSource) !== 'undefined'){
+          const url = '/api/scan/stream?session=' + encodeURIComponent(sessionId || '')
+          evtSource = new EventSource(url)
+
+          evtSource.onmessage = (e) => {
+            appendLine(e.data)
+          }
+          
+          evtSource.addEventListener('progress', (e) => { 
+            appendLine('[progress] ' + e.data) 
+          })
+          
+          evtSource.addEventListener('done', (e) => { 
+            appendLine('✅ ' + e.data)
+            cleanupStream()
+          })
+          
+          evtSource.onerror = (e) => {
+            appendLine('❗ Stream connection closed.')
+            cleanupStream()
+          }
+
+          setStatus('Scanning', true)
+          appendLine('🔍 System scan initiated (Session: ' + (sessionId||'unknown').substring(0, 8) + '...)')
+        }else{
+          appendLine('ℹ️ EventSource not available. Using polling fallback.')
+          pollLogs(sessionId)
+        }
+
+      }catch(err){
+        appendLine('❌ Error starting scan: ' + err.message)
+        setStatus('Error')
+        isScanning = false
+        startBtn.disabled = false
+      }
+    }
+
+    async function pollLogs(sess){
+      setStatus('Scanning (poll)', true)
+      let finished = false
+      while(!finished){
+        try{
+          const r = await fetch('/api/scan/logs?session=' + encodeURIComponent(sess||''))
+          if(!r.ok) throw new Error('HTTP ' + r.status)
+          const j = await r.json()
+          if(Array.isArray(j.lines)){
+            j.lines.forEach(l => appendLine(l))
+          }
+          if(j.done) { 
+            appendLine('✅ Scan complete')
+            finished = true
+            setStatus('Idle')
+            isScanning = false
+            startBtn.disabled = false
+            break 
+          }
+        }catch(e){ 
+          appendLine('❗ Poll error: ' + e.message)
+          break
+        }
+        await new Promise(r => setTimeout(r, 1000))
+      }
+    }
+
+    function cleanupStream(){
+      if(evtSource){
+        try{ evtSource.close() }catch(e){}
+        evtSource = null
+      }
+      setStatus('Idle')
+      isScanning = false
+      startBtn.disabled = false
+    }
+
+    function clearOutput(){
+      logLines = []
+      output.textContent = ''
+      appendLine('💡 Output cleared. Ready for new scan.')
+    }
+
+    function downloadLog(){
+      if(logLines.length === 0){
+        alert('No log data to download. Run a scan first.')
+        return
+      }
+      const blob = new Blob([logLines.join('\n')], { type:'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19)
+      a.download = sessionId 
+        ? `threat-log-${sessionId.substring(0, 8)}-${timestamp}.txt`
+        : `threat-log-${timestamp}.txt`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+      appendLine('💾 Log file downloaded successfully.')
+    }
+
+    function exitApp(){
+      appendLine('👋 Exiting application...')
+      setTimeout(() => {
+        try{ 
+          window.close() 
+        }catch(e){ 
+          window.location.href = 'about:blank' 
+        }
+      }, 500)
+    }
+
+    // File selection handler
+    fileInput.addEventListener('change', (e) => {
+      if(e.target.files.length > 0){
+        fileName.textContent = e.target.files[0].name
+        uploadBtn.disabled = false
+      } else {
+        fileName.textContent = 'No file chosen'
+        uploadBtn.disabled = true
+      }
+    })
+
+    // File upload handler
+    uploadBtn.addEventListener('click', async () => {
+      if (!fileInput.files.length) {
+        alert('Please select a file first')
+        return
+      }
+
+      uploadResult.style.display = 'block'
+      uploadResult.textContent = '⏳ Uploading and analyzing file...'
+      uploadBtn.disabled = true
+
+      const fd = new FormData()
+      fd.append('file', fileInput.files[0])
+
+      try {
+        const res = await fetch('/api/scan/upload', { method: 'POST', body: fd })
+        if (!res.ok) throw new Error('Upload failed (HTTP ' + res.status + ')')
+        
+        const json = await res.json()
+        uploadResult.textContent = JSON.stringify(json, null, 2)
+        
+        // Append summary to main output
+        appendLine('\n📄 File Analysis Complete')
+        appendLine('=' .repeat(50))
+        appendLine(`📁 File: ${json.filename}`)
+        appendLine(`📊 Total Lines: ${json.total_lines}`)
+        appendLine(`🔍 Threats Found: ${json.matches.length}`)
+        appendLine(`   • Keywords: ${json.summary.keyword_matches}`)
+        appendLine(`   • IP Addresses: ${json.summary.ip_matches}`)
+        appendLine(`   • Base64 Strings: ${json.summary.base64_matches}`)
+        appendLine(`   • Suspicious Commands: ${json.summary.cmd_matches}`)
+        appendLine('=' .repeat(50))
+        
+        if(json.matches.length > 0){
+          appendLine('\n⚠️ Detailed Matches:')
+          json.matches.slice(0, 10).forEach(m => {
+            appendLine(`Line ${m.line_no}: ${m.text.substring(0, 80)}${m.text.length > 80 ? '...' : ''}`)
+          })
+          if(json.matches.length > 10){
+            appendLine(`... and ${json.matches.length - 10} more matches (see JSON output)`)
+          }
+        }
+        
+      } catch (err) {
+        uploadResult.textContent = '❌ Error: ' + err.message
+        appendLine('❌ Upload error: ' + err.message)
+      } finally {
+        uploadBtn.disabled = false
+      }
+    })
+
+    // Wire button events
+    startBtn.addEventListener('click', startScan)
+    clearBtn.addEventListener('click', clearOutput)
+    downloadBtn.addEventListener('click', downloadLog)
+    exitBtn.addEventListener('click', exitApp)
+
+    // Initial status message
+    appendLine('🛡️ Advanced Threat Hunter initialized successfully.')
+    appendLine('✅ Backend connection established.')
+    appendLine('⏳ Awaiting commands...\n')
+  </script>
+</body>
+</html>
