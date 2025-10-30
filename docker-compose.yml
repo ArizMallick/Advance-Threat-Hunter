@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  threat-hunter:
+    # Use your Docker Hub image or build locally
+    image: arizhasan/ath:latest
+    
+    # Uncomment to build from local Dockerfile instead
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    
+    container_name: ath
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Port mapping
+    ports:
+      - "4000:4000"
+    
+    # Environment variables
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+      - PORT=4000
+    
+    # Volume mounts (optional - for log file analysis)
+    volumes:
+      - ./logs:/app/logs:ro  # Mount logs directory as read-only
+      - threat-hunter-data:/app/data  # Persistent data storage
+    
+    # Resource limits (optional but recommended)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:4000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Network configuration
+    networks:
+      - threat-hunter-network
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Named volumes
+volumes:
+  threat-hunter-data:
+    driver: local
+
+# Networks
+networks:
+  threat-hunter-network:
+    driver: bridge

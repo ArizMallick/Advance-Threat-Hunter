@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🛡️ Advanced Threat Hunter</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="logo">
+        <span class="logo-icon">🛡️</span>
+        <div class="logo-text">
+          <h1>Advanced Threat Hunter</h1>
+          <p>Real-time Security Monitoring & Analysis Platform</p>
+        </div>
+      </div>
+      <div class="status-badge" id="statusBadge">
+        <span class="status-dot"></span>
+        <span id="statusText">Idle</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <div class="grid-two-column">
+
+      <!-- Left Column - Main Content -->
+      <div class="main-content">
+
+        <!-- Control Panel Card -->
+        <div class="card">
+          <div class="card-header">
+            <h2>⚙️ Control Panel</h2>
+          </div>
+          <div class="card-body">
+            <div class="controls-grid">
+              <button id="startBtn" class="btn btn-primary">
+                <span>▶️</span> Start Scan
+              </button>
+              <button id="downloadBtn" class="btn btn-success">
+                <span>📥</span> Download Report
+              </button>
+              <button id="clearBtn" class="btn btn-danger">
+                <span>🗑️</span> Clear
+              </button>
+              <button id="exitBtn" class="btn btn-purple">
+                <span>🚪</span> Exit
+              </button>
+            </div>
+
+            <div class="session-info">
+              <span>🔑 Session ID:</span>
+              <span class="session-id" id="sessionId">—</span>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-card">
+                <div class="info-card-icon">🔍</div>
+                <div class="info-card-title">Status</div>
+                <div class="info-card-value" id="scanStatus">Ready</div>
+              </div>
+              <div class="info-card">
+                <div class="info-card-icon">📊</div>
+                <div class="info-card-title">Threats Detected</div>
+                <div class="info-card-value" id="threatsCount">0</div>
+              </div>
+              <div class="info-card">
+                <div class="info-card-icon">⏱️</div>
+                <div class="info-card-title">Scan Duration</div>
+                <div class="info-card-value" id="scanDuration">00:00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal Output Card -->
+        <div class="card">
+          <div class="card-header">
+            <h2>💻 System Console</h2>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="terminal">
+              <div class="terminal-header">
+                <span class="terminal-dot dot-red"></span>
+                <span class="terminal-dot dot-yellow"></span>
+                <span class="terminal-dot dot-green"></span>
+                <span class="terminal-title">threat-hunter@system:~$</span>
+              </div>
+              <pre id="output" class="terminal-output">💡 System Ready - Awaiting Commands
+================================================================================
+🛡️ Advanced Threat Hunter v2.0 Initialized
+✅ Backend Connection: Established
+📡 API Endpoint: http://127.0.0.1:4000
+⏳ Status: Standing By
+================================================================================
+
+🔐 Security Scanner Features:
+   • Real-time Process Monitoring
+   • Suspicious Activity Detection
+   • Resource Usage Analysis
+   • Malicious Pattern Recognition
+   • Log File Analysis
+
+💡 Click "Start Scan" to begin system threat assessment...
+</pre>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column - File Upload -->
+      <div>
+        <!-- File Upload Card -->
+        <div class="card">
+          <div class="card-header">
+            <h2>📁 Log File Analysis</h2>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-info">
+              <span>ℹ️</span>
+              <span>Upload log files (.log, .txt) for advanced threat pattern analysis</span>
+            </div>
+
+            <div class="upload-area">
+              <div style="font-size: 48px; margin-bottom: 1rem;">📤</div>
+              <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                Select a log file to analyze for security threats
+              </p>
+
+              <div class="file-input-wrapper">
+                <label for="logfile" class="file-input-label">
+                  <span>📎</span> Choose File
+                </label>
+                <input id="logfile" type="file" accept=".log,.txt,text/plain" />
+              </div>
+
+              <span id="fileName" class="file-name">No file selected</span>
+
+              <div style="margin-top: 1rem;">
+                <button id="uploadBtn" class="btn btn-warning" disabled>
+                  <span>🔍</span> Analyze File
+                </button>
+              </div>
+            </div>
+
+            <pre id="uploadResult" class="upload-result"></pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>
+        🛡️ Advanced Threat Hunter | Powered by Flask & Python |
+        <a href="http://127.0.0.1:4000/api/health" class="footer-link" target="_blank">API Health Check</a>
+      </p>
+      <p style="margin-top: 8px; font-size: 12px;">
+        © 2025 Security Operations Center | Real-time Threat Detection System | Author: MD ARIZ HASAN
+      </p>
+    </footer>
+
+  </div>
+
+  <script src="/static/scripts.js"></script>
+</body>
+
+</html>
