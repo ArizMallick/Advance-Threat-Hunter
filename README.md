@@ -19,7 +19,10 @@ Create a folder and organize your files like this:
 ```
 threat-hunter/
 ├── app.py          # Flask backend (Python code)
-└── index.html      # Frontend (HTML code)
+└── static/index.html      # Frontend (HTML code)
+└── static/styles.css      # Frontend (CSS code)
+└── static/scripts.js      # Frontend (JavaScript code)
+
 ```
 
 ### 3. Run the Application
